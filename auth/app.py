@@ -1,7 +1,7 @@
-from const import FLASK_HOST, FLASK_PORT
+from const import SERVER_HOST, SERVER_PORT
 from main import create_app
 
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host=FLASK_HOST, port=FLASK_PORT)
+    app.run(host=SERVER_HOST, port=SERVER_PORT)
