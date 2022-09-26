@@ -1,7 +1,7 @@
 import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME
+from const import FLASK_PORT, FLASK_HOST, FRAMEWORK_NAME
 from model import Game, db
 
 game_stat = Blueprint("game_stat", __name__, url_prefix="/game")
@@ -87,8 +87,8 @@ def delete_game(game_id):
 @game_stat.route("get/status", methods=["GET"])
 def get_status():
     return jsonify({
-        "port": SERVER_PORT,
-        "host": SERVER_HOST,
-        "addr": f"http://{SERVER_HOST}:{SERVER_PORT}/",
+        "port": FLASK_PORT,
+        "host": FLASK_HOST,
+        "addr": f"http://{FLASK_HOST}:{FLASK_PORT}/",
         "web-framework": FRAMEWORK_NAME,
     })
