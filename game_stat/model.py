@@ -27,7 +27,7 @@ class Popularity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
-    user = db.Column(db.String, unique=True, nullable=False)
+    user_id = db.Column(db.String, unique=True, nullable=False)
     is_like = db.Column(db.Boolean, nullable=False)
     game_id = db.Column(db.Integer, db.ForeignKey("game.id"), nullable=False)
     game = db.relationship("Game", back_populates="likes")

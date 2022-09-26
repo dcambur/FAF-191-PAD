@@ -36,10 +36,15 @@ def register():
     if user_collection.find_one({"username": username}):
         return jsonify({"response": "user already exists"})
 
-    user_collection.insert_one({"username": username})
+    user_data = {"username": username}
+    user_collection.insert_one(user_data)
+
+    cur_user = user_collection.find_one(user_data)
+    identity = {"id": str(cur_user["_id"]),
+                "username": cur_user["username"]}
 
     return jsonify(
-        {"response": create_access_token(identity=username)}), 200
+        {"response": create_access_token(identity=identity)}), 200
 
 
 @auth.route("get/status", methods=["GET"])
