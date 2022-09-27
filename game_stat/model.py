@@ -11,7 +11,7 @@ class Game(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     modified_at = db.Column(db.DateTime, default=datetime.datetime.now())
-    title = db.Column(db.String, unique=True)
+    title = db.Column(db.String, unique=True, nullable=False)
     desc = db.Column(db.String)
     likes = db.relationship("Popularity", back_populates="game",
                             cascade="all,delete")
@@ -28,6 +28,19 @@ class Game(db.Model):
                 "dislikes": dislikes,
                 "rating": (likes - dislikes) / total if total != 0 else 0,
                 "desc": self.desc}
+
+    def update(self, json):
+        for key, value in json.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+        self.modified_at = datetime.datetime.now()
+
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 
 class Popularity(db.Model):
@@ -50,9 +63,16 @@ class Popularity(db.Model):
                         "is_like": self.title,
                         "game_id": self.game_id})
 
+    def update(self, json):
+        for key, value in json.items():
+            if getattr(self, key):
+                setattr(self, key, value)
+        self.modified_at = datetime.datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
     def get_likes(self, game_id):
         return self.query.filter_by(game_id=game_id, is_like=True).count()
 
     def get_dislikes(self, game_id):
         return self.query.filter_by(game_id=game_id, is_like=False).count()
-
