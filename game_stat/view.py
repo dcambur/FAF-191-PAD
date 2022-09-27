@@ -2,7 +2,7 @@ import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME
-from model import Game, db
+from model import Game, db, Popularity
 
 game_stat = Blueprint("game_stat", __name__, url_prefix="/game")
 
@@ -30,9 +30,46 @@ def get_game_by_id(game_id):
 @game_stat.route("like/<int:game_id>", methods=["GET"])
 @jwt_required()
 def like_game(game_id):
-    current_user = get_jwt_identity()
-    print(current_user)
+    identity = get_jwt_identity()
+    popularity = Popularity.query.filter_by(user_id=identity["id"]).first()
+
+    if popularity:
+        popularity.is_like = not popularity.is_like
+    else:
+        popularity = Popularity()
+        popularity.game_id = game_id
+        popularity.is_like = True
+        popularity.user_id = identity["id"]
+
+    db.session.add(popularity)
+    db.session.commit()
+
     return jsonify({"response": "like/dislike success"}), 200
+
+
+@game_stat.route("rating/get/<int:game_id>", methods=["GET"])
+@jwt_required()
+def get_rating(game_id):
+    dislike = Popularity.query.filter_by(game_id=game_id, is_like=False).count()
+    like = Popularity.query.filter_by(game_id=game_id, is_like=True).count()
+
+    return jsonify({"response": (like - dislike) / (like + dislike)}), 200
+
+
+@game_stat.route("dislike/get/all/<int:game_id>", methods=["GET"])
+@jwt_required()
+def get_dislikes(game_id):
+    dislike = Popularity.query.filter_by(game_id=game_id, is_like=False).count()
+
+    return jsonify({"response": dislike}), 200
+
+
+@game_stat.route("like/get/all/<int:game_id>", methods=["GET"])
+@jwt_required()
+def get_likes(game_id):
+    like = Popularity.query.filter_by(game_id=game_id, is_like=True).count()
+
+    return jsonify({"response": like}), 200
 
 
 @game_stat.route("post", methods=["POST"])
