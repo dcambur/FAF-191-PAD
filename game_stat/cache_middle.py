@@ -1,7 +1,9 @@
+import threading
+
 import requests
 
 
-class CacheMiddle:
+class CacheMiddleware:
     GAME = "game-"
     POPULARITY = "popularity-"
     LATEST_GAME = "latest-game-stats"
@@ -12,6 +14,7 @@ class CacheMiddle:
         self.POST = "http://127.0.0.1:5002/cache/post"
         self.GET = "http://127.0.0.1:5002/cache/get/"
         self.DELETE = "http://127.0.0.1:5002/cache/delete/"
+        self._lock = threading.Lock()
 
     def send_game(self, game_id, body):
         requests.post(self.POST, json={f"{self.GAME}{game_id}": body},

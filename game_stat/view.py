@@ -5,15 +5,16 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME
 from game_stat.identity import UserIdentity
 from model import Game, db, Popularity
-from cache_middle import CacheMiddle
+from cache_middle import CacheMiddleware
 
 game_stat = Blueprint("game_stat", __name__, url_prefix="/game")
-cache_middle = CacheMiddle()
+cache_middle = CacheMiddleware()
 
 
 @game_stat.route("get/latest/<int:max_num>", methods=["GET"])
 def get_latest_games(max_num):
     cache = cache_middle.receive_latest_games()
+
     if cache:
         return jsonify({"response": cache}), 200
 
@@ -30,6 +31,7 @@ def get_latest_games(max_num):
 @game_stat.route("get/<int:game_id>", methods=["GET"])
 def get_game_by_id(game_id):
     cache = cache_middle.receive_game(game_id)
+
     if cache is not None:
         return jsonify({"response": cache}), 200
 
@@ -38,6 +40,7 @@ def get_game_by_id(game_id):
         return jsonify({"response": "id doesn't exist"}), 409
 
     cache_middle.send_game(game_id, game.response())
+
     return jsonify({"response": game.response()}), 200
 
 
@@ -45,9 +48,10 @@ def get_game_by_id(game_id):
 @jwt_required()
 def like_game(game_id):
     cache = cache_middle.receive_game(game_id)
-    if not cache:
-        game = Game.query.filter_by(id=game_id).first()
 
+    if not cache:
+
+        game = Game.query.filter_by(id=game_id).first()
         if not game:
             return jsonify({"response": "game id does not exist"}), 409
 
@@ -95,6 +99,7 @@ def post_game():
 def update_game(game_id):
     json_data = request.get_json()
     cache = cache_middle.receive_game(game_id)
+
     if cache:
         try:
             game = Game.query.get(cache["id"])
@@ -102,7 +107,6 @@ def update_game(game_id):
             cache_middle.send_game(game_id, game.response())
         except sqlalchemy.exc.IntegrityError:
             return jsonify({"response": "field violation"}), 409
-
         return jsonify({"response": game.response()}), 200
 
     game = Game.query.filter_by(id=game_id).first()
@@ -114,7 +118,6 @@ def update_game(game_id):
         cache_middle.send_game(game_id, game.response())
     except sqlalchemy.exc.IntegrityError:
         return jsonify({"response": "field violation"}), 409
-
     return jsonify({"response": game.response()}), 200
 
 
