@@ -11,7 +11,7 @@ jwt = JWTManager()
 
 def create_app():
     app = Flask(__name__)
-
+    app.debug = True
     app.config.from_object(Config)
     db.init_app(app)
     jwt.init_app(app)

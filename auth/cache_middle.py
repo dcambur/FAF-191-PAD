@@ -5,9 +5,10 @@ class CacheMiddle:
     def __init__(self, service_token="ceto-tam2"):
         self.service_token = service_token
         self.headers = {"Authorization": "Bearer " + str(self.service_token)}
-        self.POST = "http://127.0.0.1:5002/cache/post"
-        self.GET = "http://127.0.0.1:5002/cache/get/"
-        self.DELETE = "http://127.0.0.1:5002/cache/delete/"
+        self.link = "http://cache:8001"
+        self.POST = self.link + "/cache/post/"
+        self.GET = self.link + "/cache/get/"
+        self.DELETE = self.link + "/cache/delete/"
 
     def send(self, body):
         requests.post(self.POST, json=body,

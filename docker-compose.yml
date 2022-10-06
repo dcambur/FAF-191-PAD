@@ -1,0 +1,61 @@
+version: "3.9"
+
+networks:
+  game_stat_network:
+    driver: bridge
+
+services:
+  postgres:
+    container_name: pad_postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: game_stat
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - game_stat_network
+    restart: unless-stopped
+
+  redis:
+    container_name: pad_redis
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - game_stat_network
+    restart: unless-stopped
+
+  game_stat:
+    container_name: pad_game_stat
+    build: ./game_stat
+    ports:
+      - "8000:8000"
+    environment:
+      FLASK_DEBUG: "True"
+    depends_on:
+      - postgres
+    networks:
+      - game_stat_network
+
+  cache:
+    container_name: pad_cache
+    build: ./cache
+    ports:
+      - "8001:8001"
+    environment:
+      FLASK_DEBUG: "True"
+    networks:
+      - game_stat_network
+
+  auth:
+    container_name: pad_auth
+    build: ./auth
+    ports:
+      - "8002:8002"
+    environment:
+      FLASK_DEBUG: "True"
+    networks:
+      - game_stat_network

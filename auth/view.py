@@ -7,7 +7,7 @@ from flask_jwt_extended import create_access_token
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
-MONGODB_URI = "mongodb+srv://root:oNgy4iJcjqmaeR2M@cluster0.1dqchtj.mongodb.net/?retryWrites=true&w=majority"
+MONGODB_URI = "mongodb+srv://root:NxXK98vXWtSEGcjF@cluster0.1dqchtj.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(MONGODB_URI)
 auth_db = client["auth"]
 user_collection = auth_db["user"]

@@ -3,7 +3,7 @@ import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME
-from game_stat.identity import UserIdentity
+from identity import UserIdentity
 from model import Game, db, Popularity
 from cache_middle import CacheMiddleware
 
@@ -49,8 +49,7 @@ def get_game_by_id(game_id):
 def like_game(game_id):
     cache = cache_middle.receive_game(game_id)
 
-    if not cache:
-
+    if cache is None:
         game = Game.query.filter_by(id=game_id).first()
         if not game:
             return jsonify({"response": "game id does not exist"}), 409
