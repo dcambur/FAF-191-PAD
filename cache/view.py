@@ -1,8 +1,6 @@
 import json
-
 import redis
 from flask import Blueprint, request, jsonify
-
 from config import RedisConfig
 
 cache = Blueprint("crud", __name__, url_prefix="/cache")
