@@ -2,10 +2,11 @@ from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
 
 from cache_middle import CacheMiddle
-from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME
+from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME, SERVER_FULL, \
+    SERVICE_NAME
 from flask_jwt_extended import create_access_token
 
-auth = Blueprint("auth", __name__, url_prefix="/auth")
+auth = Blueprint(SERVICE_NAME, __name__, url_prefix="/auth")
 
 MONGODB_URI = "mongodb+srv://root:NxXK98vXWtSEGcjF@cluster0.1dqchtj.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(MONGODB_URI)
@@ -65,6 +66,6 @@ def get_status():
     return jsonify({
         "port": SERVER_PORT,
         "host": SERVER_HOST,
-        "addr": f"http://{SERVER_HOST}:{SERVER_PORT}/",
+        "addr": SERVER_FULL,
         "web-framework": FRAMEWORK_NAME,
     })

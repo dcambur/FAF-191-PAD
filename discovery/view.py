@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from discovery.registry import Registry
+from registry import Registry
 
 discovery = Blueprint("discovery", __name__, url_prefix="/discovery")
 registry = Registry()
@@ -13,6 +13,6 @@ def get_service_list():
 @discovery.route("register", methods=["PUT"])
 def register_service():
     data = request.get_json()
-    resp = registry.register(data["service"], data["hostname"], data["endpoint"])
+    resp = registry.register(data["service"], data["hostname"])
 
     return jsonify({"response": resp})

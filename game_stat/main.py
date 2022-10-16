@@ -1,17 +1,22 @@
+
 from flask import Flask
 from flask_jwt_extended import JWTManager
 
 from config import Config
 from flask_migrate import Migrate
+
+from const import SERVICE_NAME, SERVER_FULL
 from model import db
+from discovery_middle import DiscoveryMiddleware
 
 migrate = Migrate()
 jwt = JWTManager()
+discovery = DiscoveryMiddleware()
 
 
 def create_app():
     app = Flask(__name__)
-    app.debug = True
+    discovery.send_register(SERVICE_NAME, SERVER_FULL)
     app.config.from_object(Config)
     db.init_app(app)
     jwt.init_app(app)

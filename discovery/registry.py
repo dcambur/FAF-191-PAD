@@ -1,47 +1,29 @@
 """
     registry services format:
     {
-        service1: {
-                    id1: {
-                            host:host
-                            uri_list:uri_list
-                         },
-                    id2: {
-                            host:host
-                            uri_list:uri_list
-                         }
-                    }
+        service1: [host1, host2 ... hostN],
+        ...
+        serviceN: [host1, host2 ... hostN]
     }
 """
 
 
 class Registry:
     def __init__(self):
-        self.host = "host"
-        self.uri_list = "uri_list"
-        self._id = 0
         self.services = {}
         self._ok = "success"
 
-    def register(self, service, host, endpoint):
+    def register(self, service, host):
         if service not in self.services.keys():
-            self.services[service] = {}
+            self.services[service] = []
 
         if not self.services[service]:
-            self.services[service][self._id] = {self.host: host,
-                                                self.uri_list: [endpoint]}
-            self._id += 1
+            self.services[service] = []
+
+        if host in self.services[service]:
             return self._ok
 
-        for cur_id in self.services[service].keys():
-            if host in self.services[service][cur_id][self.host]:
-                if endpoint not in self.services[service][cur_id][self.uri_list]:
-                    self.services[service][cur_id][self.uri_list].append(endpoint)
-                return self._ok
-
-        self.services[service][self._id] = {self.host: host,
-                                            self.uri_list: [endpoint]}
-        self._id += 1
+        self.services[service].append(host)
         return self._ok
 
     def get(self, service_name):

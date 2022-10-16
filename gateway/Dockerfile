@@ -5,5 +5,5 @@ WORKDIR "/app"
 COPY . .
 
 RUN pip install -r requirements.txt
-CMD ["gunicorn"  , "-t", "30", "-w", "5", "-b", "0.0.0.0:8001", "wsgi:app"]
-EXPOSE 8001
+CMD ["gunicorn"  , "-t", "30", "-w", "5", "-b", "0.0.0.0:8004", "wsgi:app"]
+EXPOSE 8004

@@ -2,6 +2,8 @@ import threading
 
 import requests
 
+from const import CACHE
+
 
 class CacheMiddleware:
     GAME = "game-"
@@ -11,11 +13,10 @@ class CacheMiddleware:
     def __init__(self, service_token="ceto-tam"):
         self.service_token = service_token
         self.headers = {"Authorization": "Bearer " + str(self.service_token)}
-        self.link = "http://cache:8001"
+        self.link = f"http://{CACHE}:8001"
         self.POST = self.link + "/cache/post"
         self.GET = self.link + "/cache/get/"
         self.DELETE = self.link + "/cache/delete/"
-        self._lock = threading.Lock()
 
     def send_game(self, game_id, body):
         requests.post(self.POST, json={f"{self.GAME}{game_id}": body},

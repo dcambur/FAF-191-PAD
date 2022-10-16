@@ -2,12 +2,13 @@ import datetime
 import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME
+from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME, SERVER_FULL, \
+    SERVICE_NAME
 from identity import UserIdentity
 from model import Game, db, Popularity
 from cache_middle import CacheMiddleware
 
-game_stat = Blueprint("game_stat", __name__, url_prefix="/game")
+game_stat = Blueprint(SERVICE_NAME, __name__, url_prefix="/game")
 cache_middle = CacheMiddleware()
 
 
@@ -143,6 +144,6 @@ def get_status():
     return jsonify({
         "port": SERVER_PORT,
         "host": SERVER_HOST,
-        "addr": f"http://{SERVER_HOST}:{SERVER_PORT}/",
+        "addr": SERVER_FULL,
         "web-framework": FRAMEWORK_NAME,
     })
