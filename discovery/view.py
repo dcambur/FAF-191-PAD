@@ -10,7 +10,7 @@ def get_service_list():
     return jsonify({"response": registry.services})
 
 
-@discovery.route("register", methods=["POST"])
+@discovery.route("register", methods=["PUT"])
 def register_service():
     data = request.get_json()
     resp = registry.register(data["service"], data["hostname"], data["endpoint"])
