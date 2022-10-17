@@ -4,7 +4,7 @@ from loadbalancer import DiscoveryBalancer
 
 gateway = Blueprint("gateway", __name__, url_prefix="/")
 discovery = DiscoveryMiddleware()
-balancer = DiscoveryBalancer(discovery.services)
+balancer = DiscoveryBalancer(discovery)
 
 
 @gateway.route('/', defaults={'path': ''}, methods=["GET", "PUT", "POST", "DELETE"])

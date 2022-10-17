@@ -1,3 +1,4 @@
+from urllib import parse
 from flask import Blueprint, request, jsonify
 from registry import Registry
 
@@ -15,4 +16,11 @@ def register_service():
     data = request.get_json()
     resp = registry.register(data["service"], data["hostname"])
 
+    return jsonify({"response": resp})
+
+
+@discovery.route("delete/<string:service_name>", methods=["DELETE"])
+def delete_service(service_name):
+    node_name = parse.unquote(request.args.get("node"))
+    resp = registry.delete(service_name, node_name)
     return jsonify({"response": resp})
