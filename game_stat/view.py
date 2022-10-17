@@ -14,18 +14,12 @@ cache_middle = CacheMiddleware()
 
 @game_stat.route("get/latest/<int:max_num>", methods=["GET"])
 def get_latest_games(max_num):
-    cache = cache_middle.receive_latest_games()
-
-    if cache:
-        return jsonify({"response": cache}), 200
-
     games = Game.query.order_by(Game.modified_at.desc()).limit(max_num).all()
     resp = []
 
     for game in games:
         resp.append(game.response())
 
-    cache_middle.send_latest_games(resp)
     return jsonify({"response": resp}), 200
 
 

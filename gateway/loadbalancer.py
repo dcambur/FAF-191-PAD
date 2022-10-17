@@ -1,5 +1,4 @@
 import threading
-
 import requests
 
 
@@ -36,16 +35,16 @@ class DiscoveryBalancer:
             self.discovery.detach(service, host)
 
     def __proxy_request(self, host, path, req):
-        if req.method == self.POST:
-            return requests.post(host + path, data=req.data,
-                                 headers=req.headers)
-        if req.method == self.GET:
-            return requests.get(host + path, headers=req.headers)
-        if req.method == self.PUT:
-            return requests.put(host + path, data=req.data,
-                                headers=req.headers)
-        if req.method == self.DELETE:
-            return requests.delete(host + path, headers=req.headers)
+        if req["method"] == self.POST:
+            return requests.post(host + path, data=req["data"],
+                                 headers=req["headers"])
+        if req["method"] == self.GET:
+            return requests.get(host + path, headers=req["headers"])
+        if req["method"] == self.PUT:
+            return requests.put(host + path, data=req["data"],
+                                headers=req["headers"])
+        if req["method"] == self.DELETE:
+            return requests.delete(host + path, headers=req["headers"])
 
     def round_robin(self, service, path, req):
         total_nodes = self.__service_nodes_amount(service)
@@ -57,8 +56,8 @@ class DiscoveryBalancer:
         resp = self.__proxy_request(host, path, req)
         self.node_counter += 1
 
-        if resp.status_code in self.circuit_status:
-            threading.Thread(target=self.circuit_resend,
-                             args=[host, path, req]).start()
+ #       if resp.status_code in self.circuit_status:
+  #          threading.Thread(target=self.circuit_resend,
+  #                           args=[host, path, req, service]).start()
 
         return resp, resp.status_code

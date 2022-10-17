@@ -53,6 +53,10 @@ services:
   cache:
     container_name: pad_cache
     build: ./cache
+    environment:
+      REDIS_HOST: "pad_redis"
+    depends_on:
+      - redis
     networks:
       - game_stat_network
 
@@ -70,7 +74,7 @@ services:
     container_name: pad_game_stat_1
     build: ./game_stat
     environment:
-      SERVICE_PORT: "8004"
+      SERVICE_PORT: "8003"
       POSTGRES: "pad_postgres"
       CACHE: "pad_cache"
       DISCOVERY: "pad_discovery"
@@ -87,7 +91,7 @@ services:
     container_name: pad_game_stat_2
     build: ./game_stat
     environment:
-      SERVICE_PORT: "8004"
+      SERVICE_PORT: "8003"
       POSTGRES: "pad_postgres"
       CACHE: "pad_cache"
       DISCOVERY: "pad_discovery"
@@ -104,7 +108,7 @@ services:
     container_name: pad_game_stat_3
     build: ./game_stat
     environment:
-      SERVICE_PORT: "8004"
+      SERVICE_PORT: "8003"
       POSTGRES: "pad_postgres"
       CACHE: "pad_cache"
       DISCOVERY: "pad_discovery"
@@ -132,6 +136,7 @@ services:
       - auth1
       - auth2
       - auth3
+      - discovery
     networks:
       - game_stat_network
 

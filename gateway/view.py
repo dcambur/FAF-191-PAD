@@ -7,15 +7,19 @@ discovery = DiscoveryMiddleware()
 balancer = DiscoveryBalancer(discovery)
 
 
-@gateway.route('/', defaults={'path': ''}, methods=["GET", "PUT", "POST", "DELETE"])
+@gateway.route('/', defaults={'path': ''},
+               methods=["GET", "PUT", "POST", "DELETE"])
 @gateway.route('/<path:path>', methods=["GET", "PUT", "POST", "DELETE"])
 def route(path):
+    req_data = {"data": request.data, "headers": request.headers,
+                "params": request.args, "method": request.method}
+
     service_name = path.split("/")[0]
     for service, _ in balancer.services.items():
         if service == service_name:
-            [resp, status] = balancer.round_robin(service, path, request)
+            [resp, status] = balancer.round_robin(service, path, req_data)
             if status == 200:
                 return jsonify(resp.json()), status
-            break
+            return resp.text, status
 
-    return jsonify({"response": "URL Not Found"}), 404
+    return jsonify({"response": "URL Not found"}), 404
