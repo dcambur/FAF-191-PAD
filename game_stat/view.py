@@ -18,7 +18,6 @@ cache_middle = CacheMiddleware()
 @game_stat.route("get/latest/<int:max_num>", methods=["GET"])
 @limiter.limit("1 per minute")
 def get_latest_games(max_num):
-    time.sleep(40)
     games = Game.query.order_by(Game.modified_at.desc()).limit(max_num).all()
     resp = []
 

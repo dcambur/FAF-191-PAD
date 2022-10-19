@@ -17,10 +17,10 @@ namespace Discovery.Controllers
 
         // POST: discovery/register
         [HttpPost]
-        [Route("post")]
+        [Route("register")]
         public void Post([FromBody] DiscoveryData response)
         {
-            DiscoveryStorage.Register(response.server, response.hostname);
+            DiscoveryStorage.Register(response.service, response.hostname);
         }
 
         // DELETE: discovery/delete/{serviceName}
@@ -33,7 +33,7 @@ namespace Discovery.Controllers
 
     public class DiscoveryData
     {
-        public string server { get; set; }
+        public string service { get; set; }
         public string hostname { get; set; }
     }
 }

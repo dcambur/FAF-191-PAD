@@ -65,8 +65,6 @@ services:
     build: ./discovery/Discovery/Discovery
     environment:
       FLASK_DEBUG: "False"
-    ports:
-      - "80:80"
     networks:
       - game_stat_network
 
