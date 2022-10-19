@@ -1,0 +1,162 @@
+version: "3.9"
+
+networks:
+  game_stat_network:
+    driver: bridge
+
+services:
+  auth1:
+    container_name: pad_auth_1
+    build: ./auth
+    environment:
+      SERVICE_PORT: "8000"
+      CACHE: "pad_cache"
+      DISCOVERY: "pad_discovery"
+      SERVICE_NAME: "pad_auth_1"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - discovery
+      - cache
+    networks:
+      - game_stat_network
+
+  auth2:
+    container_name: pad_auth_2
+    build: ./auth
+    environment:
+      SERVICE_PORT: "8000"
+      CACHE: "pad_cache"
+      DISCOVERY: "pad_discovery"
+      SERVICE_NAME: "pad_auth_2"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - discovery
+      - cache
+    networks:
+      - game_stat_network
+
+  auth3:
+    container_name: pad_auth_3
+    build: ./auth
+    environment:
+      SERVICE_PORT: "8000"
+      CACHE: "pad_cache"
+      DISCOVERY: "pad_discovery"
+      SERVICE_NAME: "pad_auth_3"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - discovery
+      - cache
+    networks:
+      - game_stat_network
+
+  cache:
+    container_name: pad_cache
+    build: ./cache
+    environment:
+      REDIS_HOST: "pad_redis"
+    depends_on:
+      - redis
+    networks:
+      - game_stat_network
+
+  discovery:
+    container_name: pad_discovery
+    build: ./discovery/Discovery/Discovery
+    environment:
+      FLASK_DEBUG: "False"
+    networks:
+      - game_stat_network
+
+  game_stat1:
+    container_name: pad_game_stat_1
+    build: ./game_stat
+    environment:
+      SERVICE_PORT: "8003"
+      POSTGRES: "pad_postgres"
+      CACHE: "pad_cache"
+      DISCOVERY: "pad_discovery"
+      SERVICE_NAME: "pad_game_stat_1"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - discovery
+      - postgres
+      - cache
+    networks:
+      - game_stat_network
+
+  game_stat2:
+    container_name: pad_game_stat_2
+    build: ./game_stat
+    environment:
+      SERVICE_PORT: "8003"
+      POSTGRES: "pad_postgres"
+      CACHE: "pad_cache"
+      DISCOVERY: "pad_discovery"
+      SERVICE_NAME: "pad_game_stat_2"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - discovery
+      - postgres
+      - cache
+    networks:
+      - game_stat_network
+
+  game_stat3:
+    container_name: pad_game_stat_3
+    build: ./game_stat
+    environment:
+      SERVICE_PORT: "8003"
+      POSTGRES: "pad_postgres"
+      CACHE: "pad_cache"
+      DISCOVERY: "pad_discovery"
+      SERVICE_NAME: "pad_game_stat_3"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - discovery
+      - postgres
+      - cache
+    networks:
+      - game_stat_network
+
+  gateway:
+    container_name: pad_gateway
+    build: ./gateway
+    ports:
+      - "8004:8004"
+    environment:
+      DISCOVERY: "pad_discovery"
+      FLASK_DEBUG: "False"
+    depends_on:
+      - game_stat1
+      - game_stat2
+      - game_stat3
+      - auth1
+      - auth2
+      - auth3
+      - discovery
+    networks:
+      - game_stat_network
+
+  postgres:
+    container_name: pad_postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: game_stat
+      PGDATA: /data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - game_stat_network
+    restart: unless-stopped
+
+  redis:
+    container_name: pad_redis
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - game_stat_network
+    restart: unless-stopped
