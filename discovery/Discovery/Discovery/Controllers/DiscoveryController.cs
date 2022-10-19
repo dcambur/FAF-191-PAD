@@ -10,24 +10,28 @@ namespace Discovery.Controllers
         // GET: discovery/get
         [HttpGet]
         [Route("get")]
-        public Dictionary<string, List<string>> Get()
+        public IActionResult Get()
         {
-            return DiscoveryStorage.GetStorage();
+            return Ok(DiscoveryStorage.GetStorage());
         }
 
         // POST: discovery/register
         [HttpPost]
         [Route("register")]
-        public void Post([FromBody] DiscoveryData response)
+        public IActionResult Post([FromBody] DiscoveryData response)
         {
             DiscoveryStorage.Register(response.service, response.hostname);
+
+            return Ok(ResponseTemplate.Ok200());
         }
 
         // DELETE: discovery/delete/{serviceName}
         [HttpDelete("delete/{serviceName}")]
-        public void Delete(string serviceName, [FromQuery] string node)
+        public IActionResult Delete(string serviceName, [FromQuery] string node)
         {
             DiscoveryStorage.Delete(serviceName, node);
+
+            return Ok(ResponseTemplate.Ok200());
         }
     }
 
@@ -35,5 +39,17 @@ namespace Discovery.Controllers
     {
         public string service { get; set; }
         public string hostname { get; set; }
+    }
+
+    public static class ResponseTemplate
+    {
+        
+        public static Dictionary<string, string> Ok200()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "response:", "ok" }
+            };
+        }
     }
 }
