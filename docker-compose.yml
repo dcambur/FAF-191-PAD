@@ -62,11 +62,11 @@ services:
 
   discovery:
     container_name: pad_discovery
-    build: ./discovery
+    build: ./discovery/Discovery/Discovery
     environment:
       FLASK_DEBUG: "False"
     ports:
-      - "8002:8002"
+      - "80:80"
     networks:
       - game_stat_network
 

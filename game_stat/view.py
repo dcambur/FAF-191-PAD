@@ -1,4 +1,6 @@
 import datetime
+import time
+
 import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -7,13 +9,16 @@ from const import SERVER_PORT, SERVER_HOST, FRAMEWORK_NAME, SERVER_FULL, \
 from identity import UserIdentity
 from model import Game, db, Popularity
 from cache_middle import CacheMiddleware
+from main import limiter
 
 game_stat = Blueprint(SERVICE_NAME, __name__, url_prefix="/game")
 cache_middle = CacheMiddleware()
 
 
 @game_stat.route("get/latest/<int:max_num>", methods=["GET"])
+@limiter.limit("1 per minute")
 def get_latest_games(max_num):
+    time.sleep(40)
     games = Game.query.order_by(Game.modified_at.desc()).limit(max_num).all()
     resp = []
 

@@ -6,3 +6,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "some-key"
     DEBUG = False
+    RATELIMIT_DEFAULT = "100/minute"

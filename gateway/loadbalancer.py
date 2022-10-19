@@ -10,7 +10,7 @@ class DiscoveryBalancer:
 
     def __init__(self, discovery):
         self.discovery = discovery
-        self.services = discovery.services["response"]
+        self.services = discovery.services
         self.node_counter = 0
         self.circuit_max = 5
         self.circuit_status = [500, 502, 503, 504]
@@ -56,8 +56,8 @@ class DiscoveryBalancer:
         resp = self.__proxy_request(host, path, req)
         self.node_counter += 1
 
- #       if resp.status_code in self.circuit_status:
-  #          threading.Thread(target=self.circuit_resend,
-  #                           args=[host, path, req, service]).start()
+        if resp.status_code in self.circuit_status:
+            threading.Thread(target=self.circuit_resend,
+                             args=[host, path, req, service]).start()
 
         return resp, resp.status_code

@@ -16,8 +16,8 @@ class RegisterData:
 
 class DiscoveryMiddleware:
     def __init__(self):
-        self.__register = f"http://{DISCOVERY}:8002/discovery/register"
+        self.__register = f"http://{DISCOVERY}:80/discovery/register"
 
     def send_register(self, service, hostname):
         data = RegisterData(service, hostname).to_dict()
-        requests.put(self.__register, json=data)
+        requests.post(self.__register, json=data)

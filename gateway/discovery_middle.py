@@ -4,7 +4,7 @@ from const import DISCOVERY
 
 class DiscoveryMiddleware:
     def __init__(self):
-        self.url = f"http://{DISCOVERY}:8002/discovery"
+        self.url = f"http://{DISCOVERY}:80/discovery"
         self.get = "/get"
         self.delete = "/delete"
         self.services = self.__fetch().json()
