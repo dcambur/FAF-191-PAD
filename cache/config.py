@@ -1,4 +1,4 @@
 class RedisConfig:
-    expire = 864000  # 10 days
+    expire = 18000  # 5 hours
     port = 6379
     host = "localhost"
