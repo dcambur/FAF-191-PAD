@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Discovery.Storage;
+using Discovery.Model;
+
 namespace Discovery.Controllers
 {
     [Route("discovery")]
@@ -27,18 +30,12 @@ namespace Discovery.Controllers
 
         // DELETE: discovery/delete/{serviceName}
         [HttpDelete("delete/{serviceName}")]
-        public IActionResult Delete(string serviceName, [FromQuery] string node)
+        public IActionResult Delete(string serviceName, [FromQuery][Required] string node)
         {
             DiscoveryStorage.Delete(serviceName, node);
 
             return Ok(ResponseTemplate.Ok200());
         }
-    }
-
-    public class DiscoveryData
-    {
-        public string service { get; set; }
-        public string hostname { get; set; }
     }
 
     public static class ResponseTemplate

@@ -128,13 +128,13 @@ services:
       DISCOVERY: "pad_discovery"
       FLASK_DEBUG: "False"
     depends_on:
+      - discovery
       - game_stat1
       - game_stat2
       - game_stat3
       - auth1
       - auth2
       - auth3
-      - discovery
     networks:
       - game_stat_network
 

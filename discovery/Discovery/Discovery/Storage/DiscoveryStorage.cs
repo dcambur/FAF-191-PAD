@@ -2,43 +2,48 @@
 
 public static class DiscoveryStorage
 {
-    private static Dictionary<string, List<string>> _storage = new();
-
+    private static readonly Dictionary<string, List<string>> Storage = new();
+    private static readonly ReaderWriterLock Lock = new();
+    
     public static void Register(string serviceName, string node)
     {
-        if (_storage.ContainsKey(serviceName))
+        Lock.AcquireWriterLock(10);
+        if (Storage.ContainsKey(serviceName))
         {
-            var curNodes = _storage[serviceName];
+            var curNodes = Storage[serviceName];
 
             if (!curNodes.Contains(node))
             {
                 curNodes.Add(node);
-                _storage[serviceName] = curNodes;
+                Storage[serviceName] = curNodes;
             }
         }
         else
         {
             var nodeList = new List<string> { node };
-            _storage.Add(serviceName, nodeList);
+            Storage.Add(serviceName, nodeList);
         }
+        Lock.ReleaseWriterLock();
     }
 
     public static Dictionary<string, List<string>> GetStorage()
     {
-        return _storage;
+        return Storage;
     }
 
     public static void Delete(string serviceName, string nodeName)
     {
-        if (_storage.ContainsKey(serviceName))
+        Lock.AcquireWriterLock(10);
+        if (Storage.ContainsKey(serviceName))
         {
-            var nodes = _storage[serviceName];
+            var nodes = Storage[serviceName];
 
             if (nodes.Contains(nodeName))
             {
                 nodes.Remove(nodeName);
-                _storage[serviceName] = nodes;
+                Storage[serviceName] = nodes;
             }
-        } 
+        }
+        Lock.ReleaseWriterLock();
     }
 }
