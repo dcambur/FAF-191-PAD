@@ -5,5 +5,7 @@ WORKDIR "/app"
 COPY . .
 
 RUN pip install -r requirements.txt
-CMD ["gunicorn"  , "-t", "30", "-w", "1", "-b", "0.0.0.0:8004", "wsgi:app"]
+
 EXPOSE 8004
+
+ENTRYPOINT ["bash", "-c", "./entrypoint.sh"]

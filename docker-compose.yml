@@ -4,9 +4,18 @@ networks:
   game_stat_network:
     driver: bridge
 
+volumes:
+  shared-logs:
+    driver: local
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+      o: "size=256m,uid=1000"
+
 services:
   auth1:
     container_name: pad_auth_1
+    hostname: pad_auth_1
     build: ./auth
     environment:
       SERVICE_PORT: "8000"
@@ -19,9 +28,12 @@ services:
       - cache
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   auth2:
     container_name: pad_auth_2
+    hostname: pad_auth_2
     build: ./auth
     environment:
       SERVICE_PORT: "8000"
@@ -34,9 +46,12 @@ services:
       - cache
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   auth3:
     container_name: pad_auth_3
+    hostname: pad_auth_3
     build: ./auth
     environment:
       SERVICE_PORT: "8000"
@@ -49,9 +64,12 @@ services:
       - cache
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   cache:
     container_name: pad_cache
+    hostname: pad_cache
     build: ./cache
     environment:
       REDIS_HOST: "pad_redis"
@@ -59,17 +77,23 @@ services:
       - redis
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   discovery:
     container_name: pad_discovery
+    hostname: pad_discovery
     build: ./discovery/Discovery/Discovery
     environment:
       FLASK_DEBUG: "False"
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   game_stat1:
     container_name: pad_game_stat_1
+    hostname: pad_game_stat_1
     build: ./game_stat
     environment:
       SERVICE_PORT: "8003"
@@ -79,14 +103,20 @@ services:
       SERVICE_NAME: "pad_game_stat_1"
       FLASK_DEBUG: "False"
     depends_on:
-      - discovery
-      - postgres
-      - cache
+      discovery: 
+        condition: service_started
+      cache: 
+        condition: service_started
+      postgres: 
+        condition: service_healthy
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   game_stat2:
     container_name: pad_game_stat_2
+    hostname: pad_game_stat_2
     build: ./game_stat
     environment:
       SERVICE_PORT: "8003"
@@ -96,14 +126,20 @@ services:
       SERVICE_NAME: "pad_game_stat_2"
       FLASK_DEBUG: "False"
     depends_on:
-      - discovery
-      - postgres
-      - cache
+      discovery: 
+        condition: service_started
+      cache: 
+        condition: service_started
+      postgres: 
+        condition: service_healthy
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   game_stat3:
     container_name: pad_game_stat_3
+    hostname: pad_game_stat_3
     build: ./game_stat
     environment:
       SERVICE_PORT: "8003"
@@ -113,14 +149,20 @@ services:
       SERVICE_NAME: "pad_game_stat_3"
       FLASK_DEBUG: "False"
     depends_on:
-      - discovery
-      - postgres
-      - cache
+      discovery: 
+        condition: service_started
+      cache: 
+        condition: service_started
+      postgres: 
+        condition: service_healthy
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   gateway:
     container_name: pad_gateway
+    hostname: pad_gateway
     build: ./gateway
     ports:
       - "8004:8004"
@@ -137,9 +179,12 @@ services:
       - auth3
     networks:
       - game_stat_network
+    volumes:
+      - shared-logs:/logs
 
   postgres:
     container_name: pad_postgres
+    hostname: pad_postgres
     image: postgres
     environment:
       POSTGRES_USER: postgres
@@ -151,9 +196,15 @@ services:
     networks:
       - game_stat_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     container_name: pad_redis
+    hostname: pad_redis
     image: redis
     ports:
       - "6379:6379"
@@ -163,6 +214,7 @@ services:
 
   elk:
     container_name: pad_elk
+    hostname: pad_elk
     image: sebp/elk
     ports:
       - "5601:5601"
@@ -174,6 +226,5 @@ services:
       KIBANA_START: 1
     networks:
       - game_stat_network
-
-
-
+    volumes:
+      - shared-logs:/logs
