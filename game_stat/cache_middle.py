@@ -1,7 +1,4 @@
-import threading
-
 import requests
-
 from const import CACHE
 
 

@@ -160,3 +160,20 @@ services:
     networks:
       - game_stat_network
     restart: unless-stopped
+
+  elk:
+    container_name: pad_elk
+    image: sebp/elk
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+    environment:
+      ELASTICSEARCH_START: 1
+      LOGSTASH_START: 1
+      KIBANA_START: 1
+    networks:
+      - game_stat_network
+
+
+
