@@ -228,3 +228,4 @@ services:
       - game_stat_network
     volumes:
       - shared-logs:/logs
+      - ${PWD}/elk/01-logs-filter.conf:/etc/logstash/conf.d/01-logs-filter.conf
